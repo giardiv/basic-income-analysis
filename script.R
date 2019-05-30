@@ -6,10 +6,11 @@ require(htmltools)
 library(plyr)
 library(tidyverse)
 library(plotly)
+library(gtools)
 
 names(spdf)
 
-bi_effect_answer <- list(
+bi_effect_answer <- c(
   '‰Û_ do more volunteering work',
   '‰Û_ gain additional skills',
   '‰Û_ look for a different job',
@@ -132,25 +133,50 @@ server <- function(input, output) {
     }
   }
   
-  #print(bar_plots)
-  print("------ 1")
-  #print(bar_plots[1])
+  #--------------------------------------------- RADAR
+    
+    (summ <- ddply(items, .(country_code, age_group, question_bbi_2016wave4_basicincome_effect), summarize, counter=sum(counted)))
+    agg_data = ddply(summ, .(country_code, age_group), mutate, pct = counter / sum(counter) * 100)
+    data_countries_age = as_tibble(agg_data)
   
-  print("------ 2")
-  #print(bar_plots[2])
-  
-  
+    country_1 = "FR"
+    country_2 = "BE"
+    
+    radar_values_1 <- data_countries_age %>% filter(country_code == country_1, age_group == "14_25")  %>% arrange(question_bbi_2016wave4_basicincome_effect)
+    radar_values_2 <- data_countries_age %>% filter(country_code == country_2, age_group == "14_25")  %>% arrange(question_bbi_2016wave4_basicincome_effect)
+    
+    
+    answers = mixedsort(bi_effect_answer)
+    
+    print(radar_values_1)
+    print(answer)
+    
     output$answer_1_14_25 <- renderPlotly({
       
-      p <- subplot(
+      p <- plot_ly(
+        type = 'scatterpolar',
         
-        subplot(bar_plots[1]),
-        #subplot(bar_plots[20]),
-        
-        p1, p1, p1,
-                   
-                   nrows = 2)
-      
+        fill = 'toself'
+      ) %>%
+      add_trace(
+        r = radar_values_1$pct,
+        name = country_1,
+        theta = answers
+      ) %>%
+        add_trace(
+          r = radar_values_2$pct,
+          name = country_2,
+          theta = answers
+        ) %>%
+        layout(
+          polar = list(
+            radialaxis = list(
+              visible = T
+              #range = c(0,50)
+            )
+          ),
+          showlegend = T
+        )
     })
 
   output$answer_2_14_25 <- renderPlotly({
