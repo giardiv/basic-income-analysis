@@ -17,6 +17,18 @@ items$counted <- 1
 countries <- c('AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IT',
                'LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK')
 
+bi_effect_answer <- c(
+  '‰Û_ do more volunteering work',
+  '‰Û_ gain additional skills',
+  '‰Û_ look for a different job',
+  '‰Û_ spend more time with my family',
+  '‰Û_ stop working',
+  '‰Û_ work as a freelancer',
+  '‰Û_ work less',
+  'A basic income would not affect my work choices',
+  'None of the above'
+)
+
 # ---------------------------------------------------------------------------- UI
 ui <- navbarPage("Basic income analyser",
            tabPanel("Regional intention",
