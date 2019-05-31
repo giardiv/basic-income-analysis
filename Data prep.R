@@ -1,12 +1,13 @@
 library(geojsonio)
 library(maptools)
 
+##Make sure to set wd to git folder
 # spatial data for map
-spdf <- geojson_read("C:\\Users\\Stanley\\Documents\\Programming\\InfoVis\\Project\\Third try map\\Europe.geo.json",  what = "sp")
+spdf <- geojson_read("europe.geo.json",  what = "sp")
 
 # Data frames
-Raw_Data <- read_csv("Project\\Raw_full_names.csv") 
-HPI <- read_csv("Project\\CSVs\\HPI.csv")
+Raw_Data <- read_csv("data\\Raw_full_names.csv") 
+HPI <- read_csv("data\\HPI.csv")
 
 ### Cleaning raw data
 # voting patterns
