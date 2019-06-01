@@ -17,6 +17,13 @@ items$counted <- 1
 countries <- c('AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IT',
                'LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK')
 
+age_group <- list(
+  'all',
+  '14_25',
+  '26_39',
+  '40_65'
+)
+
 bi_effect_answer <- c(
   '‰Û_ do more volunteering work',
   '‰Û_ gain additional skills',
@@ -46,14 +53,46 @@ ui <- navbarPage("Basic income analyser",
                                    checkboxInput("compare", "Compare", value = TRUE),
                                    conditionalPanel("input.compare == 1",
                                     selectInput("country_2", h5("Region 2"), 
-                                               choices = countries, selected = "IT")
+                                               choices = countries, selected = "NL")
                                    ),
                                    hr(),
-                                   checkboxInput("gender_enable", "Enable gender filter", value = TRUE),
+                                   checkboxInput("gender_enable", "Enable gender filter", value = FALSE),
                                    conditionalPanel("input.gender_enable == 1",
-                                                    radioButtons("gender", h3("Gender"),
-                                                choices = list("Women only" = "female", "Men only" = "male"),selected = "male"))
-                                 ),
+                                                    radioButtons("gender", h5("Gender"),
+                                                choices = list("Women only" = "female", "Men only" = "male"),selected = "male")),
+                                   hr(),
+                                   selectInput("age", h5("Age group"), 
+                                               choices =  list(
+                                                 'All age' = 'all',
+                                                 '14 to 25 yo' = '14_25',
+                                                 '26 to 39 yo' = '26_39',
+                                                 '40 to 65 yo' = '40_65'
+                                               ), selected = "all"),
+                                   hr(),
+                                   checkboxInput("rural_enable", "Enable rurality filter", value = FALSE),
+                                   conditionalPanel("input.rural_enable == 1",
+                                                    radioButtons("rural", h5("Rurality"),
+                                                                 choices = list("Rural only" = "rural", "Urban only" = "urban"),selected = "urban")),
+                                   hr(),
+                                   selectInput("education", h5("Education level"), 
+                                               choices =  list(
+                                                 'All levels' = 'all',
+                                                 'Low level' = 'low',
+                                                 'Medium level' = 'medium',
+                                                 'High level' = 'high'
+                                               ), selected = "all"),
+                                   hr(),
+                                   checkboxInput("job_enable", "Enable full time job filter", value = FALSE),
+                                   conditionalPanel("input.job_enable == 1",
+                                                    radioButtons("job", h5("Has a full time job"),
+                                                                 choices = list("Employed only" = "yes", "Unemployed only" = "no"),selected = "yes")),
+                                   hr(),
+                                   checkboxInput("children_enable", "Enable children filter", value = FALSE),
+                                   conditionalPanel("input.children_enable == 1",
+                                                    radioButtons("children", h5("Has children"),
+                                                                 choices = list("Has children only" = "yes", "Doesn't has children only" = "no"),selected = "yes"))
+                                   
+                                ),
                                  mainPanel(
                                    plotlyOutput("radar_bi_effect")
                                  )
@@ -107,24 +146,67 @@ server <- function(input, output) {
   answers = mixedsort(bi_effect_answer)
   
   output$radar_bi_effect <- renderPlotly({
-    list <- c("country_code", "age_group", "question_bbi_2016wave4_basicincome_effect")
+    list <- c("country_code", "question_bbi_2016wave4_basicincome_effect")
+    if(input$gender_enable){
+      list <- c(list, "gender")
+    }
+    if(input$age != 'all'){
+      list <- c(list, "age_group")
+    }
+    if(input$rural_enable){
+      list <- c(list, "rural")
+    }
+    if(input$education != 'all'){
+      list <- c(list, "dem_education_level")
+    }
+    
+    if(input$job_enable){
+      list <- c(list, "dem_full_time_job")
+    }
+    if(input$children_enable){
+      list <- c(list, "dem_has_children")
+    }
+    
     (summ <- ddply(items, list, summarize, counter=sum(counted)))
-    agg_data = ddply(summ, .(country_code, age_group), mutate, pct = counter / sum(counter) * 100)
+    agg_data = ddply(summ, .(country_code), mutate, pct = counter / sum(counter) * 100)
     data_countries_age = as_tibble(agg_data)
     
     
-    radar_values_1 <- data_countries_age %>% filter(country_code == input$country_1, age_group == "14_25")  %>% arrange(question_bbi_2016wave4_basicincome_effect)
-    radar_values_2 <- data_countries_age %>% filter(country_code == input$country_2, age_group == "14_25")  %>% arrange(question_bbi_2016wave4_basicincome_effect)
+    radar_values_1 <- data_countries_age %>% filter(country_code == input$country_1)  %>% arrange(question_bbi_2016wave4_basicincome_effect)
+    radar_values_2 <- data_countries_age %>% filter(country_code == input$country_2)  %>% arrange(question_bbi_2016wave4_basicincome_effect)
     
     if(input$gender_enable){
-      #radar_values_1 <- radar_values_1 %>% filter(gender == input$gender)
+      radar_values_1 <- radar_values_1 %>% filter(gender == input$gender)
+      radar_values_2 <- radar_values_2 %>% filter(gender == input$gender)
     }
+    if(input$age != 'all'){
+      radar_values_1 <- radar_values_1 %>% filter(age_group == input$age)
+      radar_values_2 <- radar_values_2 %>% filter(age_group == input$age)
+    }
+    
+    if(input$rural_enable){
+      radar_values_1 <- radar_values_1 %>% filter(rural == input$rural)
+      radar_values_2 <- radar_values_2 %>% filter(rural == input$rural)
+    }
+    if(input$education != 'all'){
+      radar_values_1 <- radar_values_1 %>% filter(dem_education_level == input$education)
+      radar_values_2 <- radar_values_2 %>% filter(dem_education_level == input$education)
+    }
+    if(input$job_enable){
+      radar_values_1 <- radar_values_1 %>% filter(dem_full_time_job == input$job)
+      radar_values_2 <- radar_values_2 %>% filter(dem_full_time_job == input$job)
+    }
+    if(input$children_enable){
+      radar_values_1 <- radar_values_1 %>% filter(dem_has_children == input$children)
+      radar_values_2 <- radar_values_2 %>% filter(dem_has_children == input$children)
+    }
+    
     
     temp_values <- radar_values_1
     temp_values_1 <<- radar_values_1
     for(answer in answers){
       if(nrow(radar_values_1 %>% filter(question_bbi_2016wave4_basicincome_effect == answer)) == 0){
-        temp_values_1 <<- radar_values_1 %>% add_row(country_code = input$country_1, age_group = "14_25",question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
+        temp_values_1 <<- radar_values_1 %>% add_row(country_code = input$country_1,question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
       }
       temp_values <<- temp_values_1
     }
@@ -134,7 +216,7 @@ server <- function(input, output) {
     temp_values_2 <<- radar_values_2
     for(answer in answers){
       if(nrow(radar_values_2 %>% filter(question_bbi_2016wave4_basicincome_effect == answer)) == 0){
-        temp_values_2 <<- radar_values_2 %>% add_row(country_code = input$country_1, age_group = "14_25",question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
+        temp_values_2 <<- radar_values_2 %>% add_row(country_code = input$country_1,question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
       }
       temp_values_bis <<- temp_values_2
     }
