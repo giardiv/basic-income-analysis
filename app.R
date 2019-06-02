@@ -7,7 +7,7 @@ library(gtools)
 
 
 # ---------------------------------------------------------------------------- IMPORTS
-#source('radar_bi_effect.R')
+source('functions.R')
 
 # ---------------------------------------------------------------------------- DATA
 items <- read.csv("data/basic_income_dataset_dalia.csv")
@@ -94,7 +94,10 @@ ui <- navbarPage("Basic income analyser",
                                    
                                 ),
                                  mainPanel(
-                                   plotlyOutput("radar_bi_effect")
+                                   h3("Overview of the motivation profile by country"),
+                                   plotlyOutput("radar_bi_effect"),
+                                   h3("Precise comparaison of the motivation arguments"),
+                                   plotlyOutput("bar_bi_effect")
                                  )
                                )
                       ),
@@ -146,81 +149,9 @@ server <- function(input, output) {
   answers = mixedsort(bi_effect_answer)
   
   output$radar_bi_effect <- renderPlotly({
-    list <- c("country_code", "question_bbi_2016wave4_basicincome_effect")
-    if(input$gender_enable){
-      list <- c(list, "gender")
-    }
-    if(input$age != 'all'){
-      list <- c(list, "age_group")
-    }
-    if(input$rural_enable){
-      list <- c(list, "rural")
-    }
-    if(input$education != 'all'){
-      list <- c(list, "dem_education_level")
-    }
     
-    if(input$job_enable){
-      list <- c(list, "dem_full_time_job")
-    }
-    if(input$children_enable){
-      list <- c(list, "dem_has_children")
-    }
-    
-    (summ <- ddply(items, list, summarize, counter=sum(counted)))
-    agg_data = ddply(summ, .(country_code), mutate, pct = counter / sum(counter) * 100)
-    data_countries_age = as_tibble(agg_data)
-    
-    
-    radar_values_1 <- data_countries_age %>% filter(country_code == input$country_1)  %>% arrange(question_bbi_2016wave4_basicincome_effect)
-    radar_values_2 <- data_countries_age %>% filter(country_code == input$country_2)  %>% arrange(question_bbi_2016wave4_basicincome_effect)
-    
-    if(input$gender_enable){
-      radar_values_1 <- radar_values_1 %>% filter(gender == input$gender)
-      radar_values_2 <- radar_values_2 %>% filter(gender == input$gender)
-    }
-    if(input$age != 'all'){
-      radar_values_1 <- radar_values_1 %>% filter(age_group == input$age)
-      radar_values_2 <- radar_values_2 %>% filter(age_group == input$age)
-    }
-    
-    if(input$rural_enable){
-      radar_values_1 <- radar_values_1 %>% filter(rural == input$rural)
-      radar_values_2 <- radar_values_2 %>% filter(rural == input$rural)
-    }
-    if(input$education != 'all'){
-      radar_values_1 <- radar_values_1 %>% filter(dem_education_level == input$education)
-      radar_values_2 <- radar_values_2 %>% filter(dem_education_level == input$education)
-    }
-    if(input$job_enable){
-      radar_values_1 <- radar_values_1 %>% filter(dem_full_time_job == input$job)
-      radar_values_2 <- radar_values_2 %>% filter(dem_full_time_job == input$job)
-    }
-    if(input$children_enable){
-      radar_values_1 <- radar_values_1 %>% filter(dem_has_children == input$children)
-      radar_values_2 <- radar_values_2 %>% filter(dem_has_children == input$children)
-    }
-    
-    
-    temp_values <- radar_values_1
-    temp_values_1 <<- radar_values_1
-    for(answer in answers){
-      if(nrow(radar_values_1 %>% filter(question_bbi_2016wave4_basicincome_effect == answer)) == 0){
-        temp_values_1 <<- radar_values_1 %>% add_row(country_code = input$country_1,question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
-      }
-      temp_values <<- temp_values_1
-    }
-    radar_values_1 <- temp_values_1
-    
-    temp_values_bis <- radar_values_2
-    temp_values_2 <<- radar_values_2
-    for(answer in answers){
-      if(nrow(radar_values_2 %>% filter(question_bbi_2016wave4_basicincome_effect == answer)) == 0){
-        temp_values_2 <<- radar_values_2 %>% add_row(country_code = input$country_1,question_bbi_2016wave4_basicincome_effect = answer,counter = 0, pct = 0)
-      }
-      temp_values_bis <<- temp_values_2
-    }
-    radar_values_2 <- temp_values_2
+    radar_values_1 <- get_radar_values(input, input$country_1)
+    radar_values_2 <- get_radar_values(input, input$country_2)
     
     p <- plot_ly(
       type = 'scatterpolar',
@@ -237,17 +168,34 @@ server <- function(input, output) {
             visible = T
           )
         )
-      ) 
+      )
     
     if(input$compare){
-    p <- p %>% add_trace(
-          r = radar_values_2$pct,
-          name = input$country_2,
-          theta = answers
-    )
+      p <- p %>% add_trace(
+            r = radar_values_2$pct,
+            name = input$country_2,
+            theta = answers
+      ) 
     }
     
     return(p)
+  })
+  
+  output$bar_bi_effect <- renderPlotly({
+    radar_values_1 <- get_radar_values(input, input$country_1)
+    radar_values_2 <- get_radar_values(input, input$country_2)
+    
+    q <- plot_ly(x = answers, y = radar_values_1$pct, type = 'bar', name = input$country_1) %>%
+      layout(yaxis = list(title = 'Proportion of intention'), barmode = 'group')
+    
+    if(input$compare){
+      q <- q %>% add_trace(
+        y = radar_values_2$pct,
+        name = input$country_2
+      ) 
+    }
+    
+    return(q)
   })
   
   
