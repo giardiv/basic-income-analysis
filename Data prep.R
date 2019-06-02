@@ -21,7 +21,7 @@ tibble_data = as_tibble(agg_data)
 votes <- tibble_data %>% filter(question_bbi_2016wave4_basicincome_vote == 'I would vote for it')
 colnames(votes)[colnames(votes)=="perc"] <- "vote_for"
 votes$question_bbi_2016wave4_basicincome_vote <- NULL
-votes$counter <- NULL
+# votes$counter <- NULL
 
 # probably for
 votes["probably_for"] <- (tibble_data %>% filter(question_bbi_2016wave4_basicincome_vote == 'I would probably vote for it'))["perc"]
@@ -66,8 +66,9 @@ gender_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 
 job_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100)
 
 
+
 ### Data for bubble chart
-# bubble_data <-  merge(HPI, data, by="Country")
+bubble_data <-  merge(HPI, votes, by="Country")
 
 
 
