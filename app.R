@@ -4,6 +4,10 @@ library(plyr)
 library(tidyverse)
 library(plotly)
 library(gtools)
+library(knitr)
+
+source("map.R")
+source("bubble.R")
 
 
 # ---------------------------------------------------------------------------- IMPORTS
@@ -36,10 +40,12 @@ bi_effect_answer <- c(
   'None of the above'
 )
 
+read_chunk("map.R", labels = "map_code")
+
 # ---------------------------------------------------------------------------- UI
 ui <- navbarPage("Basic income analyser",
            tabPanel("Regional intention",
-                    h1("MAPS")
+           run_map()
            ),
            navbarMenu("Demographic motivation",
                       #work_effect_ui("work_effect"),
@@ -130,7 +136,7 @@ ui <- navbarPage("Basic income analyser",
                       # EXAMPLE ----
            ),
            tabPanel("Environnement influence",
-                    h1("SCATTERPLOOOT")
+                    run_bubbles()
            )
 )
 
