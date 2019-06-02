@@ -1,6 +1,9 @@
 library(geojsonio)
 library(maptools)
 
+read_data <- function() {
+  
+
 ##Make sure to set wd to git folder
 # spatial data for map
 spdf <- geojson_read("europe.geo.json",  what = "sp")
@@ -69,6 +72,6 @@ job_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100
 
 ### Data for bubble chart
 bubble_data <-  merge(HPI, votes, by="Country")
-
+}
 
 
