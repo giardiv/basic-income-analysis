@@ -8,12 +8,14 @@ library(knitr)
 
 source("map.R")
 source("bubble.R")
+source("Data prep.R")
 
 
 # ---------------------------------------------------------------------------- IMPORTS
 #source('radar_bi_effect.R')
 
 # ---------------------------------------------------------------------------- DATA
+read_data()
 items <- read.csv("data/basic_income_dataset_dalia.csv")
 items$counted <- 1
 
