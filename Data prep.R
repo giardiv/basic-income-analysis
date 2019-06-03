@@ -9,8 +9,8 @@ library(maptools)
 spdf <- geojson_read("europe.geo.json",  what = "sp")
 
 # Data frames
-Raw_Data <- read_csv("data\\Raw_full_names.csv") 
-HPI <- read_csv("data\\HPI.csv")
+Raw_Data <- read_csv("data/Raw_full_names.csv") 
+HPI <- read_csv("data/HPI.csv")
 
 ### Cleaning raw data
 # voting patterns

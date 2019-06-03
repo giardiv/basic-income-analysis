@@ -32,17 +32,15 @@ ui <- fluidPage(
    
              # mainPanel (
                      
-   column(8,
-          column(8,
+   column(10,
+          column(7,
       leafletOutput("mymap")
       ),
-      column(2,
+      column(5,
              plotOutput(outputId = "distPlot3"),
-             plotOutput(outputId = "distPlot2")
-             )
-      # column(2,
-      # # plotOutput(outputId = "distPlot1")
-      # )
+             plotOutput(outputId = "distPlot2"),
+             plotOutput(outputId = "distPlot1")
+            )
       
    )
     
