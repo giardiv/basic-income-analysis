@@ -11,13 +11,13 @@ library(gtools)
 names(spdf)
 
 bi_effect_answer <- c(
-  '‰Û_ do more volunteering work',
-  '‰Û_ gain additional skills',
-  '‰Û_ look for a different job',
-  '‰Û_ spend more time with my family',
-  '‰Û_ stop working',
-  '‰Û_ work as a freelancer',
-  '‰Û_ work less',
+  'do more volunteering work',
+  'gain additional skills',
+  'look for a different job',
+  'spend more time with my family',
+  'stop working',
+  'work as a freelancer',
+  'work less',
   'A basic income would not affect my work choices',
   'None of the above'
 )
