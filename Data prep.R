@@ -1,7 +1,7 @@
 library(geojsonio)
 library(maptools)
 
-read_data <- function() {
+# read_data <- function() {
   
 
 ##Make sure to set wd to git folder
@@ -72,6 +72,31 @@ job_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100
 
 ### Data for bubble chart
 bubble_data <-  merge(HPI, votes, by="Country")
+# }
+
+add_country = function(input) {
+  plot_age_1 <- age_data %>% filter(Country == input)
+  x_1 <- plot_age_1 %>% filter(question_bbi_2016wave4_basicincome_vote == "I would vote for it")
+  x_1 = mutate(x_1, percentage = (counter / sum(counter)) * 100   )
+  
+  matrix_1 = x_1 %>% remove_rownames %>% column_to_rownames(var="age_group")
+  matrix_1$question_bbi_2016wave4_basicincome_vote <- NULL
+  matrix_1$counter <- NULL
+  matrix_1$perc <- NULL
+  Country = (matrix_1$Country)[1]
+  matrix_1$Country <- NULL
+  matrix_1 = t(matrix_1)
+  row.names(matrix_1)[1] <- Country
+  matrix_1 = data.frame(matrix_1)
+  return(matrix_1)
 }
+
+remove_country = function(country) {
+  
+  bar_data <- bar_data[!rownames(bar_data) %in% country, ]
+  return(bar_data)
+}
+
+
 
 

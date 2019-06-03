@@ -15,7 +15,7 @@ source("Data prep.R")
 source('functions.R')
 
 # ---------------------------------------------------------------------------- DATA
-read_data()
+
 items <- read.csv("data/basic_income_dataset_dalia.csv")
 items$counted <- 1
 
