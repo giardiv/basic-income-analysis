@@ -1,8 +1,37 @@
 library(geojsonio)
 library(maptools)
 
-read_data <- function() {
+add_country = function(data, column, question, input) {
+  plot_age_1 <- data %>% filter(Country == input)
+  x_1 <- plot_age_1 %>% filter(question_bbi_2016wave4_basicincome_vote == question)
+  x_1 = mutate(x_1, percentage = (counter / sum(counter)) * 100   )
   
+  matrix_1 = x_1 %>% remove_rownames %>% column_to_rownames(var=column)
+  matrix_1$question_bbi_2016wave4_basicincome_vote <- NULL
+  matrix_1$counter <- NULL
+  matrix_1$perc <- NULL
+  Country = (matrix_1$Country)[1]
+  matrix_1$Country <- NULL
+  matrix_1 = t(matrix_1)
+  row.names(matrix_1)[1] <- Country
+  matrix_1 = data.frame(matrix_1)
+  return(matrix_1)
+}
+
+# add_country(age_data, "age_group", "Germany")
+# add_country(gender_data, "gender", "Germany")
+add_country(job_data, "dem_full_time_job", "I would vote for it", "Austria")
+
+
+# bar_data <- if(exists("bar_data")) bar_data <- rbind(bar_data, add_country("Austria")) else bar_data = add_country("Austria")
+
+remove_country = function(data, country) {
+  
+  data <- data[!rownames(data) %in% country, ]
+  return(data)
+}
+ 
+# remove_country(bar_data, "Germany") 
 
 ##Make sure to set wd to git folder
 # spatial data for map
@@ -68,10 +97,13 @@ gender_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 
 (summ <- ddply(Raw_Data, .(Country, dem_full_time_job, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
 job_data = ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100)
 
+colors_bar <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a')
+
+rm(list = ls()[grep("^bar", ls())], envir = .GlobalEnv)
 
 
 ### Data for bubble chart
 bubble_data <-  merge(HPI, votes, by="Country")
-}
+
 
 

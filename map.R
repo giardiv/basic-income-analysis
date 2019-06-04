@@ -9,6 +9,7 @@ require(htmltools)
 #SUB QUESTION find spatial patterns!
 
 run_map <- function() {
+ 
   
 # Fix layout!
   
@@ -37,12 +38,11 @@ ui <- fluidPage(
       leafletOutput("mymap")
       ),
       column(2,
-             plotOutput(outputId = "distPlot3"),
-             plotOutput(outputId = "distPlot2")
+             plotOutput(outputId = "age_plot"),
+             plotOutput(outputId = "job_plot")
+             # plotOutput(outputId = "gender_plot")
              )
-      # column(2,
-      # # plotOutput(outputId = "distPlot1")
-      # )
+      
       
    )
     
@@ -54,9 +54,16 @@ ui <- fluidPage(
 
 
 server <- function(input, output, session) {
- 
+  # if (exists("bar_data")){ rm(bar_data, envir = .GlobalEnv)} 
+  # if (exists("bar_gender_data")){ rm(bar_gender_data, envir = .GlobalEnv)} 
+  # if (exists("bar_job_data")){ rm(bar_job_data, envir = .GlobalEnv)} 
+  
+  
+  
+  
+  
   output$mymap <- renderLeaflet({
-    
+  
     
     answer <- switch(input$answer, 
                    "I would vote for it" = map_data$vote_for,
@@ -104,31 +111,98 @@ server <- function(input, output, session) {
       style = list("font-weight" = "normal", padding = "3px 8px"),
       textsize = "15px",
       direction = "auto")
+  ) %>%
+  
+  addLegend(position = "bottomright", pal = pal, values = answer,
+            title = "Values",
+            labFormat = labelFormat(prefix = "(", suffix = ")%"),
+            opacity = 1
   )
   })
   
   observeEvent(input$mymap_shape_click, {
+    answer <- switch(input$answer, 
+                     "I would vote for it" = "vote_for",
+                     "I would probably vote for it" = "probably_for",
+                     "I would probably vote against it" = "probably_against",
+                     "I would vote against it" = "against",
+                     "I would not vote" = "no_vote")
     
-    output$distPlot1 <- renderPlot({
-      plot_age <- age_data %>% filter(Country == input$mymap_shape_click$id)
-      x <- plot_age %>% filter(question_bbi_2016wave4_basicincome_vote == input$answer)
-      x = mutate(x, percentage = (counter / sum(counter)) * 100   )
-      barplot(x$percentage , names.arg = x$age_group, horiz = TRUE, col = "#75AADB", border = "white", main = input$mymap_shape_click$id, xlab = "Percentage of total", ylab = "Age group")
+    output$age_plot <- renderPlot({
+      if(!exists(paste("bar_age_data", answer, sep = ""))){ dataset2 = data.frame(assign(paste("bar_age_data", answer, sep = ""), 
+                                                                                         value = (add_country(age_data, "age_group", input$answer, input$mymap_shape_click$id)), 
+                                                                                         envir = .GlobalEnv))
+      }
+      else{
+        dataset2 = eval(parse(text = paste("bar_age_data", answer, sep = "")))
+        if(input$mymap_shape_click$id %in% row.names(dataset2)){ 
+          dataset2 = remove_country(dataset2, input$mymap_shape_click$id)
+          print(dataset2)
+        }
+        else{
+          dataset2 = rbind(dataset2, add_country(age_data, "age_group", input$answer, input$mymap_shape_click$id))
+        }
+      }
+      final_colors <- colors_bar[1:nrow(dataset2)]
+      print(row.names(dataset2))
+      
+      barplot(as.matrix(dataset2), main = "Age group", xlim = c(0,100), col = final_colors, names.arg = list("14-25", "26-39", "40-65"), beside=TRUE, legend = row.names(dataset2), horiz = TRUE, border = "white", xlab = "Percentage of total", ylab = "Age group")
+      
+      data.frame(assign(paste("bar_age_data", answer, sep = ""), 
+                        value = dataset2,
+                        envir = .GlobalEnv))
+      })
+    
+    output$job_plot <- renderPlot({
+      if(!exists(paste("bar_job_data_", answer, sep = ""))){ dataset1 = data.frame(assign(paste("bar_job_data_", answer, sep = ""), 
+                                                                                            value = (add_country(job_data, "dem_full_time_job", input$answer, input$mymap_shape_click$id)), 
+                                                                                            envir = .GlobalEnv))
+      }
+      else{
+        dataset1 = eval(parse(text = paste("bar_job_data_", answer, sep = "")))
+        if(input$mymap_shape_click$id %in% row.names(dataset1)){ 
+          dataset1 = remove_country(dataset1, input$mymap_shape_click$id)
+          print(dataset1)
+        }
+        else{
+          dataset1 = rbind(dataset1, add_country(job_data, "dem_full_time_job", input$answer, input$mymap_shape_click$id))
+        }
+      }
+      final_colors <- colors_bar[1:nrow(dataset1)]
+      print(row.names(dataset1))
+      
+      barplot(as.matrix(dataset1), main = "Full-time job", xlim = c(0,100), col = final_colors, names.arg = list("no", "yes"), beside=TRUE, legend = row.names(dataset1), horiz = TRUE, border = "white", xlab = "Percentage of total", ylab = "Full-time job")
+      
+      data.frame(assign(paste("bar_job_data_", answer, sep = ""), 
+                        value = dataset1,
+                        envir = .GlobalEnv))
     })
     
-    output$distPlot2 <- renderPlot({
-      plot_gender <- gender_data %>% filter(question_bbi_2016wave4_basicincome_vote == input$answer)
-      x <- plot_gender %>% filter(Country == input$mymap_shape_click$id)
-      x = mutate(x, percentage = (counter / sum(counter)) * 100   )
-      barplot(x$percentage , names.arg = x$gender, horiz = TRUE, col = "#75AADB", border = "white", main = input$mymap_shape_click$id, xlab = "Percentage of total", ylab = "Gender")
-    })
-    
-    output$distPlot3 <- renderPlot({
-      plot_job <- job_data %>% filter(question_bbi_2016wave4_basicincome_vote == input$answer)
-      x <- plot_job %>% filter(Country == input$mymap_shape_click$id)
-      x = mutate(x, percentage = (counter / sum(counter)) * 100   )
-      barplot(x$percentage , names.arg = x$dem_full_time_job, horiz = TRUE, col = "#75AADB", border = "white", main = input$mymap_shape_click$id, xlab = "Percentage of total", ylab = "Full time job")
-    })
+    output$gender_plot <- renderPlot({
+      
+      if(!exists(paste("bar_gender_data_", answer, sep = ""))){ dataset = data.frame(assign(paste("bar_gender_data_", answer, sep = ""), 
+                                                             value = (add_country(gender_data, "gender", input$answer, input$mymap_shape_click$id)), 
+                                                             envir = .GlobalEnv))
+      }
+      else{
+        dataset = eval(parse(text = paste("bar_gender_data_", answer, sep = "")))
+        if(input$mymap_shape_click$id %in% row.names(dataset)){ 
+          dataset = remove_country(dataset, input$mymap_shape_click$id)
+          print(dataset)
+          }
+        else{
+          dataset = rbind(dataset, add_country(gender_data, "gender", input$answer, input$mymap_shape_click$id))
+        }
+      }
+      final_colors <- colors_bar[1:nrow(dataset)]
+      print(row.names(dataset))
+      
+      barplot(as.matrix(dataset), main = "Gender", xlim = c(0,100), col = final_colors, names.arg = list("female", "male"), beside=TRUE, legend = row.names(dataset), horiz = TRUE, border = "white", xlab = "Percentage of total", ylab = "Gender")
+   
+      data.frame(assign(paste("bar_gender_data_", answer, sep = ""), 
+                        value = dataset,
+                        envir = .GlobalEnv))
+       })
     
     
   })
