@@ -1,5 +1,23 @@
+bi_effect_answer <- c(
+  'do more volunteering work',
+  'gain additional skills',
+  'look for a different job',
+  'spend more time with my family',
+  'stop working',
+  'work as a freelancer',
+  'work less',
+  'A basic income would not affect my work choices',
+  'None of the above'
+)
+
 
 get_radar_values <- function(input, country){
+
+  items <- read.csv("data/basic_income_dataset_dalia.csv")
+  items$counted <- 1
+  
+  answers = mixedsort(bi_effect_answer)
+  
   list <- c("country_code", "question_bbi_2016wave4_basicincome_effect")
   if(input$gender_enable){
     list <- c(list, "gender")

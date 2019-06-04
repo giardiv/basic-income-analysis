@@ -20,8 +20,11 @@ items <- read.csv("data/basic_income_dataset_dalia.csv")
 items$counted <- 1
 
 # ---------------------------------------------------------------------------- CONSTS
-countries <- c('AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IT',
-               'LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK')
+countries <- c(
+"Austria","Belgium","Bulgaria","Croatia","Cyprus","Czech","Denmark",
+"Estonia","Finland","France","Germany","Greece","Hungary","Ireland",
+"Italy","Latvia","Lituania","Luxembourg","Malta","Netherlands","Poland",
+"Portugal","Romania","Slovakia","Slovenia","Spain","Sweden","United-Kingdom")
 
 age_group <- list(
   'all',
@@ -56,12 +59,12 @@ ui <- navbarPage("Basic income analyser",
                                sidebarLayout(
                                  sidebarPanel(
                                    selectInput("country_1", h5("Region 1"), 
-                                               choices = countries, selected = "FR"),
+                                               choices = countries, selected = "France"),
                                    hr(),
                                    checkboxInput("compare", "Compare", value = TRUE),
                                    conditionalPanel("input.compare == 1",
                                     selectInput("country_2", h5("Region 2"), 
-                                               choices = countries, selected = "NL")
+                                               choices = countries, selected = "Netherlands")
                                    ),
                                    hr(),
                                    checkboxInput("gender_enable", "Enable gender filter", value = FALSE),
