@@ -10,13 +10,15 @@ source("map.R")
 source("bubble.R")
 source("Data prep.R")
 
+source("arguments_for.R")
+
 
 # ---------------------------------------------------------------------------- IMPORTS
 source('functions.R')
 
 # ---------------------------------------------------------------------------- DATA
 
-items <- read.csv("data/basic_income_dataset_dalia.csv")
+items <- read.csv("data/basic_income_dataset_dalia_v2.csv")
 items$counted <- 1
 
 # ---------------------------------------------------------------------------- CONSTS
@@ -113,11 +115,13 @@ ui <- navbarPage("Basic income analyser",
                                )
                       ),
                       
+                      tabPanel("Arguments for basic incomes",
+                               includeCSS("style.css"),
+                               style = "height:2000px;",
+                        arguments_for()
+                      ),
                       tabPanel("Arguments against basic income",
                                h1("Arguments against basic income")
-                      ),
-                      tabPanel("Arguments for basic income",
-                               h1("Arguments for basic income ")
                       ),
                       
                       # ---- EXAMPLE OF FLUID ROW
@@ -203,7 +207,7 @@ server <- function(input, output) {
       q <- q %>% add_trace(
         y = radar_values_2$pct,
         name = input$country_2
-      ) 
+      )
     }
     
     return(q)
