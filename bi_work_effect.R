@@ -25,8 +25,8 @@ bi_effect_answer <- c(
 
 bi_effect <- function() {
   
-  ui <-  fluidPage(style = "height:2000px;",
-                   fluidRow(style = "height:2000px;",
+  ui <-  fluidPage(
+                   fluidRow(
                             
                             h1("How basic income would affect work choices"),
                             sidebarLayout(

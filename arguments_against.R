@@ -22,8 +22,8 @@ bi_arg_against <- c(
 
 arguments_against <- function() {
   
-  ui <-  fluidPage(style = "height:2000px;",
-                   fluidRow(style = "height:2000px;",
+  ui <-  fluidPage(
+                   fluidRow(
                             h1("Which of the following arguments AGAINST the basic income do you find convincing?"),
                             sidebarLayout(
                               sidebarPanel(

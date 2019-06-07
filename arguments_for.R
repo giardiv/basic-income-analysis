@@ -22,8 +22,8 @@ bi_arg_for <- c(
 
 arguments_for <- function() {
   
-  ui <-  fluidPage(style = "height:2000px;",
-                   fluidRow(style = "height:2000px;",
+  ui <-  fluidPage(
+                   fluidRow(
                  h1("Which of the following arguments FOR the basic income do you find convincing?"),
                  sidebarLayout(
                    sidebarPanel(
