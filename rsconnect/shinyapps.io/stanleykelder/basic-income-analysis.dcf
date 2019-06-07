@@ -1,0 +1,12 @@
+name: basic-income-analysis
+title: basic-income-analysis
+username:
+account: stanleykelder
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 965195
+bundleId: 2137458
+url: https://stanleykelder.shinyapps.io/basic-income-analysis/
+when: 1559905108.76678
+asMultiple: FALSE
+asStatic: FALSE

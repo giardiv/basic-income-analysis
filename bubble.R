@@ -27,7 +27,7 @@ ui <- fluidPage(
                                      "I would probably vote against it", 
                                      "I would vote against it",
                                      "I would not vote"),
-                      selected = "I would vote for it")),
+                      selected = "I would vote for it"),
     
  
            helpText("Which correlation do you want to explore?" ),
@@ -38,8 +38,8 @@ ui <- fluidPage(
                                       "Well-being",
                                       "Life Expectancy", 
                                       "Ecological footprint",
-                       selected = "Well-being")),
-    
+                       selected = "Well-being"))
+    ),
     column(8,
            plotlyOutput("bubble")
     )
@@ -65,7 +65,7 @@ server <- function(input, output, session) {
                           "Ecological footprint" = bubble_data$Footprint)
     
     plot_ly(bubble_data, x = correlation, y = answer, color = ~Region, colors = colors, text = ~Country, type = 'scatter', mode = 'markers', size = 12)%>%
-            # , marker = list(size = (~counter * 0.2), opacity = 0.5)) %>%
+            
     layout(
            xaxis = list(title=input$correlation, showgrid = FALSE),
            yaxis = list(title=paste(input$answer, "(percentage)"),showgrid = FALSE))

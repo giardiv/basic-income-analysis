@@ -9,57 +9,61 @@ require(htmltools)
 #SUB QUESTION find spatial patterns!
 
 run_map <- function() {
+  map_data <- spCbind(spdf, xtra1)
  
   
 # Fix layout!
   
 ui <- fluidPage(
+  
   fluidRow(
+    column(12,
+           h1(textOutput("selected_answer"), align = "center")
+    ),
+    column(12,
+           h6("Click on a country to compare the demographic information of the voters of a country. Click on the country again to remove it from the comparison.", align = "center")
+    ),
     column(2,
            # sidebarLayout(
-             # sidebarPanel(
-               helpText("If there would be a referendum on introducing basic income today, how would you vote?" ),
-               
-               selectInput("answer", 
-                           label = "Choose the answer to explore",
-                           choices = list("I would vote for it", 
-                                          "I would probably vote for it",
-                                          "I would probably vote against it", 
-                                          "I would vote against it",
-                                          "I would not vote"),
-                           selected = "I would vote for it")
+           # sidebarPanel(
+           helpText("If there would be a referendum on introducing basic income today, how would you vote?" ),
+           
+           selectInput("answer", 
+                       label = "Choose the answer to explore",
+                       choices = list("I would vote for it", 
+                                      "I would probably vote for it",
+                                      "I would probably vote against it", 
+                                      "I would vote against it",
+                                      "I would not vote"),
+                       selected = "I would vote for it")
            
     ),
-   
-             # mainPanel (
-                     
-   column(10,
-          column(7,
-      leafletOutput("mymap")
-      ),
-
-      column(5,
-             plotOutput(outputId = "age_plot"),
-             plotOutput(outputId = "job_plot"),
-             plotOutput(outputId = "gender_plot")
-             )
-      
-   )
     
-   )
+    # mainPanel (
+    
+    column(10,
+           column(6,
+                  leafletOutput("mymap")
+           ),
+           
+           column(6,
+                  plotOutput(outputId = "age_plot"),
+                  plotOutput(outputId = "job_plot"),
+                  plotOutput(outputId = "gender_plot")
+           )
+           
+    )
+    
+  )
 )
-      
+
+     
            
 # )
 
 
 server <- function(input, output, session) {
-  # if (exists("bar_data")){ rm(bar_data, envir = .GlobalEnv)} 
-  # if (exists("bar_gender_data")){ rm(bar_gender_data, envir = .GlobalEnv)} 
-  # if (exists("bar_job_data")){ rm(bar_job_data, envir = .GlobalEnv)} 
-  
-  
-  
+  output$selected_answer <- renderText({input$answer})  
   
   
   output$mymap <- renderLeaflet({

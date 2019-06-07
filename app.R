@@ -6,19 +6,23 @@ library(plotly)
 library(gtools)
 library(knitr)
 
+# Read initial data
+source("Data prep.R")
+read_data()
+
+# ---------------------------------------------------------------------------- IMPORTS
 source("map.R")
 source("bubble.R")
-source("Data prep.R")
+
 
 source("arguments_for.R")
 source("arguments_against.R")
 source("bi_work_effect.R")
 
-
-# ---------------------------------------------------------------------------- IMPORTS
 source('functions.R')
 
-read_chunk("map.R", labels = "map_code")
+
+
 
 # ---------------------------------------------------------------------------- UI
 ui <- navbarPage("Basic income analyser",
@@ -49,6 +53,7 @@ ui <- navbarPage("Basic income analyser",
 
 # ---------------------------------------------------------------------------- SERVER
 server <- function(input, output) {
+  
 
 }
 
