@@ -183,7 +183,7 @@ server <- function(input, output, session) {
     })
     
     output$gender_plot <- renderPlot({
-      
+      print(gender_data)
       if(!exists(paste("bar_gender_data_", answer, sep = ""))){ dataset = data.frame(assign(paste("bar_gender_data_", answer, sep = ""), 
                                                              value = (add_country(gender_data, "gender", input$answer, input$mymap_shape_click$id)), 
                                                              envir = .GlobalEnv))

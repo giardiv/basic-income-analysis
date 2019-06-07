@@ -77,16 +77,17 @@ map_data <- spCbind(spdf, xtra1)
 
 ### Data for bar charts
 ## age groups
-(summ <- ddply(Raw_Data, .(Country, age_group, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
-age_data <<- ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100)
+(summ1 <- ddply(Raw_Data, .(Country, age_group, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
+age_data <<- ddply(summ1, .(Country), mutate, perc = (counter / sum(counter)) * 100)
 
+print(Raw_Data)
 ## Gender
-(summ <<- ddply(Raw_Data, .(Country, gender, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
-gender_data <<- ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100)
+(summ2 <- ddply(Raw_Data, .(Country, gender, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
+gender_data <<- ddply(summ2, .(Country), mutate, perc = (counter / sum(counter)) * 100)
 
 ## Full-time job
-(summ <<- ddply(Raw_Data, .(Country, dem_full_time_job, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
-job_data <<- ddply(summ, .(Country), mutate, perc = (counter / sum(counter)) * 100)
+(summ3 <- ddply(Raw_Data, .(Country, dem_full_time_job, question_bbi_2016wave4_basicincome_vote), summarize, counter=sum(counted)))
+job_data <<- ddply(summ3, .(Country), mutate, perc = (counter / sum(counter)) * 100)
 
 colors_bar <<- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a')
 

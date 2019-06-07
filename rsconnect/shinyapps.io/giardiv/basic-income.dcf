@@ -1,0 +1,12 @@
+name: basic-income
+title: basic-income
+username:
+account: giardiv
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 970876
+bundleId: 2138344
+url: https://giardiv.shinyapps.io/basic-income/
+when: 1559928934.76975
+asMultiple: FALSE
+asStatic: FALSE
