@@ -14,6 +14,11 @@ bi_arg_for_list <- c(
   'volunteering','responsibility','needs','opportunity','everyone','expense','none'
 )
 
+bi_arg_against_list <- c(
+  'working','foreigners', 'state', 'finance', 'dependance', 'reward', 'none'
+)
+
+
 
 get_radar_values <- function(input, country){
 
@@ -85,16 +90,18 @@ get_radar_values <- function(input, country){
 }
 
 
-get_radar_values_arg <- function(input, country){
+get_radar_values_arg <- function(input, country, for_arg){
   
   items <- read.csv("data/basic_income_dataset_dalia_v2.csv")
   items$counted <- 1
   
+  if(for_arg){
+    answers = mixedsort(bi_arg_for_list)
+  } else {
+    answers = mixedsort(bi_arg_against_list)
+  }
   
-  answers = mixedsort(bi_arg_for_list)
-  
-  list <- c(#bi_arg_for_list, 
-            "country_code")
+  list <- c("country_code")
   if(input$gender_enable){
     list <- c(list, "gender")
   }
@@ -116,7 +123,10 @@ get_radar_values_arg <- function(input, country){
   }
   
   
-  (summ <- ddply(items, list, summarize, counter=sum(counted),
+  
+  if(for_arg){
+  
+    (summ <- ddply(items, list, summarize, counter=sum(counted),
                  c_volunteering=sum(volunteering),
                  c_responsibility=sum(responsibility),
                  c_needs=sum(needs),
@@ -125,6 +135,21 @@ get_radar_values_arg <- function(input, country){
                  c_expense=sum(expense),
                  c_none=sum(none)
         ))
+    
+  } else {
+    
+    (summ <- ddply(items, list, summarize, counter=sum(counted),
+                   c_volunteering=sum(working),
+                   c_responsibility=sum(foreigners),
+                   c_needs=sum(state),
+                   c_opportunity=sum(finance),
+                   c_everyone=sum(dependance),
+                   c_expense=sum(reward),
+                   c_none=sum(none)
+    ))
+    
+  }
+  
   agg_data = ddply(summ, list, summarize, 
                    pct_volunteering = c_volunteering / counter * 100,
                    pct_responsibility = c_responsibility / counter * 100,
@@ -132,10 +157,9 @@ get_radar_values_arg <- function(input, country){
                    pct_opportunity = c_opportunity / counter * 100,
                    pct_everyone = c_everyone / counter * 100,
                    pct_expense = c_expense / counter * 100,
-                   pct_none = c_none / counter * 100,
+                   pct_none = c_none / counter * 100
                 )
   data_countries_age = as_tibble(agg_data)
-  
   
   
   radar_values_1 <- data_countries_age %>% filter(country_code == country) # %>% arrange(question_bbi_2016wave4_basicincome_effect)

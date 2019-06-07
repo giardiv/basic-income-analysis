@@ -10,25 +10,6 @@ countries <- c(
   "Italy","Latvia","Lituania","Luxembourg","Malta","Netherlands","Poland",
   "Portugal","Romania","Slovakia","Slovenia","Spain","Sweden","United-Kingdom")
 
-age_group <- list(
-  'all',
-  '14_25',
-  '26_39',
-  '40_65'
-)
-
-bi_effect_answer <- c(
-  'do more volunteering work',
-  'gain additional skills',
-  'look for a different job',
-  'spend more time with my family',
-  'stop working',
-  'work as a freelancer',
-  'work less',
-  'A basic income would not affect my work choices',
-  'None of the above'
-)
-
 bi_arg_for <- c(
   'volunteering' = 'It increases appreciation for household work and volunteering',
   'responsibility' = 'It encourages financial independence and self-responsibility',
@@ -99,7 +80,7 @@ arguments_for <- function() {
                      plotlyOutput("bar_bi_effect")
                    )
                  )
-                   )
+              )
   )
   
   
@@ -108,8 +89,8 @@ arguments_for <- function() {
     
     output$radar_bi_effect <- renderPlotly({
       
-      radar_values_1 <- get_radar_values_arg(input, input$country_1)
-      radar_values_2 <- get_radar_values_arg(input, input$country_2)
+      radar_values_1 <- get_radar_values_arg(input, input$country_1, TRUE)
+      radar_values_2 <- get_radar_values_arg(input, input$country_2, TRUE)
       
       p <- plot_ly(
         type = 'scatterpolar',
@@ -140,8 +121,8 @@ arguments_for <- function() {
     })
     
     output$bar_bi_effect <- renderPlotly({
-      radar_values_1 <- get_radar_values_arg(input, input$country_1)
-      radar_values_2 <- get_radar_values_arg(input, input$country_2)
+      radar_values_1 <- get_radar_values_arg(input, input$country_1, TRUE)
+      radar_values_2 <- get_radar_values_arg(input, input$country_2, TRUE)
       
       q <- plot_ly(x = bi_arg_for, y = radar_values_1, type = 'bar', name = input$country_1) %>%
         layout(yaxis = list(title = 'Proportion of choices'), barmode = 'group')

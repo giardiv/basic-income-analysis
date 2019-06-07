@@ -38,7 +38,7 @@ ui <- fluidPage(
       leafletOutput("mymap")
       ),
 
-      column(2,
+      column(5,
              plotOutput(outputId = "age_plot"),
              plotOutput(outputId = "job_plot"),
              plotOutput(outputId = "gender_plot")
